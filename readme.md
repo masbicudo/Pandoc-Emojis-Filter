@@ -27,11 +27,34 @@ latex engines, only to have black-and-white emojis.
 - Pre/Code tags are ignored by Pandoc when converting to PDF.
     This filter is not supposed to do anything about this,
     so I won't be doing anything here about it.
+
+    <pre>
+    📦package \
+    ┣ 📂dir1 \
+    ┣ 📂dir2 \
+    ┃ ┗ 📂subdir \
+    ┣ 📜file1 \
+    ┗ 📜file2
+    </pre>
+
 - Codeblocks and Code are not parsed nor converted.
     This is because I don't know yet how to encode them
     properly to appear like code in the final PDF file.
     Probably, I will have to convert them to LaTeX code
     and include them via `RawBlock`, using latex `verbatim`.
+
+        📦package
+        ┣ 📂dir1
+        ┣ 📂dir2
+        ┃ ┗ 📂subdir
+        ┣ 📜file1
+        ┗ 📜file2
+
+- Literal emojis like `:name:` are not converted to real emojis. Use `--from markdown+emoji` or `--from gfm`.
+
+    :smile: :airplane:
+
+    See [Non-pandoc extensions - Pandoc manual](https://pandoc.org/MANUAL.html#non-pandoc-extensions)
 
 ## Compiling a PDF from this `readme.md` file
 
@@ -98,7 +121,7 @@ This is used to select the emoji source.
 At this moment only two sources are available:
 
 - `twemoji`: [Twemoji by Twitter](https://twemoji.twitter.com/)
-- `noto-emoji`: [Noto emoji by Google](https://www.google.com/get/noto/)
+- `noto-emoji`: [Noto Color Emoji by Google](https://www.google.com/get/noto/help/emoji/)
 
 Usage: pass `-M emoji=noto-emoji` or `-M emoji=twemoji` to pandoc along with other params.
 
@@ -106,6 +129,7 @@ See [Emojipedia](https://emojipedia.org/) for a list of emojis.
 
 ## References
 
+- [Full Emoji List - unicode.org](https://unicode.org/emoji/charts/full-emoji-list.html)
 - [Emojipedia](https://emojipedia.org/microsoft/)
 - `\usepackage{pmboxdraw}`
 - VSCode extension: [file-tree-generator](https://marketplace.visualstudio.com/items?itemName=Shinotatwu-DS.file-tree-generator)

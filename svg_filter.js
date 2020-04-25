@@ -60,7 +60,7 @@ async function get_emoji(icon, source) {
 	return filename
 }
 
-async function replace_emojis(text, emoji_source) {
+async function replace_emojis(text, format, emoji_source, context) {
 	var text_w_img = twemoji.parse(text, { callback: imageSourceGenerator })
 	var split = text_w_img.split(/\<img class="emoji" draggable="false" alt="([^"]+)" src="([^"]+)"\/>/g)
 	if (split.length == 1)
@@ -69,8 +69,7 @@ async function replace_emojis(text, emoji_source) {
 	const result_array = []
 	for (var it = 0; it < split.length; it += 3) {
 		if (split[it] !== "") {
-			if (/^\s+$/g.test(split[it])) result_array.push(pandoc.Space())
-			else result_array.push(pandoc.Str(split[it]))
+			result_array.push(pandoc.Str(split[it]))
 		}
 		if (it + 2 < split.length && split[it + 2] !== null) {
 			const id = ""
@@ -86,22 +85,39 @@ async function replace_emojis(text, emoji_source) {
 			src = await get_emoji(src, emoji_source)
 			src = svg_to_pdf(src)
 			attrs.push(["height", "1em"])
-			const img_emoji = pandoc.Image([id, classes, attrs], caption_list, [src, "fig:"])
+			var img_emoji
+			if (context == "Verbatim") {
+				img_emoji = pandoc.RawInline("latex", `$\\includegraphics[${attrs.map(a=>a.join('=')).join(',')}]{${src.replace(/\\/g, '/')}}$`)
+			}
+			else {
+				img_emoji = pandoc.Image([id, classes, attrs], caption_list, [src, "fig:"])
+			}
 			result_array.push(img_emoji)
 		}
 	}
 	return result_array
 }
 
-async function action(obj, format, meta) {
+async function codeblock_to_verbatim(code_text, format, emoji_source) {
+	const context = "Verbatim"
+	var items = await replace_emojis(code_text, format, emoji_source, context)
+	return ([
+		pandoc.RawBlock("latex", "\\begin{"+context+"}[commandchars=\\\\\\{\\}, mathescape]"),
+		pandoc.Para([...(Array.isArray(items) ? items : [items]),]),
+		pandoc.RawBlock("latex", "\\end{"+context+"}"),
+	])
+}
+
+async function visit(obj, format, meta) {
 	if (obj.__skip) return
 	var { t: type, c: value } = obj
 
-	if (meta.__debug) wait_debugger()
+	if (meta.__debug && JSON.parse(meta.__debug.c))
+		wait_debugger()
 
 	const emoji_source = meta.emoji ? meta.emoji.c : process.env["emoji_source"] || "noto-emoji"
 	if (type === "Str") {
-		return replace_emojis(value, emoji_source)
+		return await replace_emojis(value, format, emoji_source)
 	}
 	else if (type == "Code") {
 		// var [[code_identifier, code_classes, code_attributes], code_text] = value
@@ -111,10 +127,19 @@ async function action(obj, format, meta) {
 		// var [raw_format, raw_text] = value
 		// return pandoc.RawBlock(raw_format, raw_text)
 	}
+	else if (type == "RawInline") {
+		var [raw_format, raw_text] = value
+		return pandoc.RawInline(raw_format, raw_text)
+	}
 	else if (type == "CodeBlock") {
-		// var [[code_identifier, code_classes, code_attributes], code_text] = value
-		// return pandoc.CodeBlock([code_identifier, code_classes, code_attributes], code_text)
+		var [[code_identifier, code_classes, code_attributes], code_text] = value
+		return await codeblock_to_verbatim(code_text, format, emoji_source)
 	}
 }
 
-pandoc.stdio(action);
+async function visit_array(arr, format, meta) {
+	// we could look for <pre> and </pre> tags
+	return arr
+}
+
+pandoc.stdio({"single": visit, "array": visit_array})

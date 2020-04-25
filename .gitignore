@@ -10,3 +10,5 @@ template.aux
 *.fls
 xpto123.txt
 twemoji/
+tex2pdf.*
+/out.*

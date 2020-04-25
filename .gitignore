@@ -1,0 +1,11 @@
+node_modules/
+/noto-emoji/
+out.pdf
+output.md
+package-lock.json
+template.aux
+*.aux
+*.fdb_latexmk
+*.log
+*.fls
+xpto123.txt

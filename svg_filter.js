@@ -8,10 +8,12 @@ const twemoji = require('twemoji')
 const shell = require('shelljs')
 const path = require('path')
 
-const inkscape_path = shell.which("inkscape").stdout.split("\n")[0].trim()
+function wait_debugger() {
+	var hr=process.hrtime.bigint,f=wait_debugger,t
+	while(!f._r){t=hr();debugger;if(hr()-t>100000000)f._r=true}
+}
 
-const source = "noto-emoji"
-// const source = "twemoji"
+const inkscape_path = shell.which("inkscape").stdout.split("\n")[0].trim()
 
 function imageSourceGenerator(icon, options) {
 	return icon
@@ -26,7 +28,7 @@ function svg_to_pdf(src) {
 	return full_target
 }
 
-async function get_emoji(icon) {
+async function get_emoji(icon, source) {
 	var src, dirname
 	if (source == "noto-emoji") {
 		src = `https://raw.githubusercontent.com/googlefonts/noto-emoji/master/svg/emoji_u${icon}.svg`
@@ -42,19 +44,23 @@ async function get_emoji(icon) {
 	if (!fs.existsSync(filename)) {
 		const file = fs.createWriteStream(filename)
 		await new Promise((resolve, reject) => {
-			const request = https.get(src, function (response) {
-				response.pipe(file)
-				file.on('finish', () => {
-					file.close();  // close() is async, call cb after close completes.
-					resolve()
+			try {
+				const request = https.get(src, function (response) {
+					response.pipe(file)
+					file.on('finish', () => {
+						file.close();
+						resolve()
+					})
 				})
-			})
+			} catch (e) {
+				reject(e)
+			}
 		})
 	}
 	return filename
 }
 
-async function replace_emojis(text) {
+async function replace_emojis(text, emoji_source) {
 	var text_w_img = twemoji.parse(text, { callback: imageSourceGenerator })
 	var split = text_w_img.split(/\<img class="emoji" draggable="false" alt="([^"]+)" src="([^"]+)"\/>/g)
 	if (split.length == 1)
@@ -77,7 +83,7 @@ async function replace_emojis(text) {
 				caption_list.push(str_emoji)
 			}
 			var src = split[it + 2]
-			src = await get_emoji(src)
+			src = await get_emoji(src, emoji_source)
 			src = svg_to_pdf(src)
 			attrs.push(["height", "1em"])
 			const img_emoji = pandoc.Image([id, classes, attrs], caption_list, [src, "fig:"])
@@ -87,24 +93,15 @@ async function replace_emojis(text) {
 	return result_array
 }
 
-function wait_debugger() {
-	var time = process.hrtime()
-	while(waiting) {
-		debugger
-		if (process.hrtime(time)[0]) waiting=false
-		time = process.hrtime()
-	}
-}
-
-var waiting=true
 async function action(obj, format, meta) {
 	if (obj.__skip) return
 	var { t: type, c: value } = obj
 
-	// wait_debugger()
+	if (meta.__debug) wait_debugger()
 
+	const emoji_source = meta.emoji ? meta.emoji.c : process.env["emoji_source"] || "noto-emoji"
 	if (type === "Str") {
-		return replace_emojis(value)
+		return replace_emojis(value, emoji_source)
 	}
 	else if (type == "Code") {
 		// var [[code_identifier, code_classes, code_attributes], code_text] = value

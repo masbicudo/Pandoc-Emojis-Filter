@@ -44,6 +44,7 @@ function svg_to_pdf(src) {
 }
 
 async function get_emoji(icon, source) {
+	const cache_dir = process.env["SVG_FILTER_CACHE_DIR"] || ""
 	var src, dirname
 	if (source == "noto-emoji") {
 		src = `https://raw.githubusercontent.com/googlefonts/noto-emoji/master/svg/emoji_u${icon}.svg`
@@ -53,9 +54,10 @@ async function get_emoji(icon, source) {
 		src = `${twemoji.base}svg/${icon}.svg`
 		dirname = "twemoji"
 	}
-	const filename = `./${dirname}/${icon}.svg`
+	dirname = path.join(cache_dir, dirname)
+	const filename = `${dirname}/${icon}.svg`
 	if (!fs.existsSync(dirname))
-		fs.mkdirSync(dirname)
+		shell.mkdir('-p', dirname)
 	if (!fs.existsSync(filename)) {
 		const file = fs.createWriteStream(filename)
 		await new Promise((resolve, reject) => {

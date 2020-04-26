@@ -138,6 +138,13 @@ Usage: pass `-M emoji=noto-emoji` or `-M emoji=twemoji` to pandoc along with oth
 
 See [Emojipedia](https://emojipedia.org/) for a list of emojis.
 
+## Changing emoji cache directory
+
+Just set the environment variable `SVG_FILTER_CACHE_DIR`.
+
+You may need to use `declare -x SVG_FILTER_CACHE_DIR` in your script,
+so that the filter can see the environment variable.
+
 ## References
 
 - [Full Emoji List - unicode.org](https://unicode.org/emoji/charts/full-emoji-list.html)

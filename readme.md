@@ -75,40 +75,44 @@ it is the one I am currently developing more actively.
 ## Javascript + Python filter
 
     node app.js
-    pandoc --template="template.tex" -o out.pdf output.md --filter=svg_filter.py
+    pandoc --template="template.tex" -o out.pdf output.md \
+        --filter=svg_filter.py
 
 ## Javascript only filter via NodeJs
 
-First, install the `pandoc-filter` from npm:
+First, install JS script dependencies using npm:
 
-    npm install -g pandoc-filter
+    npm install
 
 Then, run `pandoc` passing in the filter file name:
 
-    pandoc --template="template.tex" -o out.pdf readme.md --filter=svg_filter.js
+    pandoc --template="template.tex" -o out.pdf readme.md \
+        --filter=emoji_filter.js
 
 Passing parameters:
 
     pandoc --template="template.tex" -o out.pdf readme.md \
-        --filter=svg_filter.js -M __debug=1 -M emoji=twemoji
+        --filter=emoji_filter.js -M __debug=1 -M emoji=twemoji
 
 Debugging using VSCode:
 
     pandoc --template="template.tex" -o out.pdf readme.md \
-        --filter=svg_filter.js -M __debug=1
+        --filter=emoji_filter.js -M __debug=1
 
 Then, in VSCode, attach to Node process... the JS filter code will be waiting,
 and will only continue execution after the debugger is attached. If you don't attach
 the debugger, then it will stall in an infinite loop.
 
-## Example: compiled this `readme.md`
+## Example: compiling this `readme.md`
 
 This `readme.md` file was compiled using the following command:
 
     pandoc --template="template.tex" -o example.pdf readme.md \
-        --filter=svg_filter.js -M emoji=noto-emoji --from gfm
+        --filter=emoji_filter.js -M emoji=noto-emoji --from gfm
 
 This is the resulting PDF: [example.pdf](example.pdf)
+
+You can also run `create-example.sh`.
 
 ## Filter parameters
 

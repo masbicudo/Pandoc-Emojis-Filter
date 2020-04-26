@@ -36,21 +36,30 @@ $endfor$
 
 \usepackage{titlesec}
 \usepackage{fancyhdr}
-\fancypagestyle{sectionpage}{
+\fancypagestyle{my_sectionpage}{
   \fancyhf{}
   %\fancyfoot{}
+  %\fancyhead[L]{\leftmark}
   \fancyhead[R]{\thepage}
   \renewcommand{\headrulewidth}{0pt}
   %\renewcommand{\footrulewidth}{1pt}% or however thick
 }
 \newcommand{\sectionbreak}{
-  \clearpage
-  \thispagestyle{sectionpage}
+  % Note: \sectionbreak is not always placed by \scetion command,
+  % specially if the previous section or subsections has not been
+  % populated with text. In the case of the previous secction
+  % has been populated with images and tables only, it is considered
+  % as being empty of text!
+  %     That said, we cannot count on \sectionbreak to force
+  % a page-break before the section. To do that, we need to redefine
+  % the \section command to always place \clearpage before emitting
+  % the real section.
+  \thispagestyle{my_sectionpage}
 }
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\rightmark}
+\fancyhead[L]{\leftmark}
 \fancyhead[R]{\thepage}
 \renewcommand{\headrulewidth}{0pt}
 
@@ -414,6 +423,12 @@ $if(logo)$
 \logo{\includegraphics{$logo$}}
 $endif$
 $endif$
+
+% Note: we need to redefine the \section command to insert a forced
+% \clearpage for every section.
+% ref: https://tex.stackexchange.com/questions/353912/titlesecs-sectionbreak-not-recognized-after-empty-previous-sections
+\let\defsection\section
+\renewcommand\section{\clearpage\defsection}
 
 \usepackage{fvextra}
 

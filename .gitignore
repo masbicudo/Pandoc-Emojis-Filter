@@ -12,3 +12,5 @@ xpto123.txt
 twemoji/
 tex2pdf.*
 /out.*
+*.bak
+*.orig

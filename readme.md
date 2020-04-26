@@ -37,11 +37,14 @@ latex engines, only to have black-and-white emojis.
     ┗ 📜file2
     </pre>
 
-- Codeblocks and Code are not parsed nor converted.
-    This is because I don't know yet how to encode them
-    properly to appear like code in the final PDF file.
-    Probably, I will have to convert them to LaTeX code
-    and include them via `RawBlock`, using latex `verbatim`.
+- Codeblocks and Code, like `📂dir1`, are now being parsed.
+    The `CodeBlock` nodes are replaced by the latex `Verbatim` provided
+    by the package `fvextra`. The `Code` nodes are replaced by
+    a sequence of `RawInline` and `Code` nodes, literally it just
+    remove the emojis from the code node, splitting the code node if necessary.
+    This is less than ideal, but for now it is working. It could be placed
+    inside the latex `texttt` command, but that would be more
+    laborious.
 
         📦package
         ┣ 📂dir1
@@ -93,6 +96,14 @@ Debugging using VSCode:
 Then, in VSCode, attach to Node process... the JS filter code will be waiting,
 and will only continue execution after the debugger is attached. If you don't attach
 the debugger, then it will stall in an infinite loop.
+
+## Example: compiled this `readme.md`
+
+This `readme.md` file was compiled using the following command:
+
+    pandoc --template="template.tex" -o example.pdf readme.md --filter=svg_filter.js -M emoji=noto-emoji --from gfm
+
+This is the resulting PDF: [example.pdf](example.pdf)
 
 ## Filter parameters
 

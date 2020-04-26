@@ -61,15 +61,19 @@ async function get_emoji(icon, source) {
 }
 
 async function replace_emojis(text, format, emoji_source, context) {
+	var create_text
+	if (context == "texttt") create_text = (text) => pandoc.Code(["", [], []], text)
+	else create_text = (text) => pandoc.Str(text)
+
 	var text_w_img = twemoji.parse(text, { callback: imageSourceGenerator })
 	var split = text_w_img.split(/\<img class="emoji" draggable="false" alt="([^"]+)" src="([^"]+)"\/>/g)
 	if (split.length == 1)
-		return pandoc.Str(split[0])
+		return create_text(split[0])
 	
 	const result_array = []
 	for (var it = 0; it < split.length; it += 3) {
 		if (split[it] !== "") {
-			result_array.push(pandoc.Str(split[it]))
+			result_array.push(create_text(split[it]))
 		}
 		if (it + 2 < split.length && split[it + 2] !== null) {
 			const id = ""
@@ -77,7 +81,7 @@ async function replace_emojis(text, format, emoji_source, context) {
 			const attrs = []
 			const caption_list = []
 			if (split[it + 1] !== null) {
-				const str_emoji = pandoc.Str(split[it + 1])
+				const str_emoji = create_text(split[it + 1])
 				str_emoji.__skip = true
 				caption_list.push(str_emoji)
 			}
@@ -86,7 +90,7 @@ async function replace_emojis(text, format, emoji_source, context) {
 			src = svg_to_pdf(src)
 			attrs.push(["height", "1em"])
 			var img_emoji
-			if (context == "Verbatim") {
+			if (format == "latex" && (context == "Verbatim" || context == "texttt")) {
 				img_emoji = pandoc.RawInline("latex", `$\\includegraphics[${attrs.map(a=>a.join('=')).join(',')}]{${src.replace(/\\/g, '/')}}$`)
 			}
 			else {
@@ -96,6 +100,14 @@ async function replace_emojis(text, format, emoji_source, context) {
 		}
 	}
 	return result_array
+}
+
+async function code_to_texttt(code_text, format, emoji_source) {
+	const context = "texttt"
+	var items = await replace_emojis(code_text, format, emoji_source, context)
+	return ([
+		...(Array.isArray(items) ? items : [items]),
+	])
 }
 
 async function codeblock_to_verbatim(code_text, format, emoji_source) {
@@ -120,7 +132,8 @@ async function visit(obj, format, meta) {
 		return await replace_emojis(value, format, emoji_source)
 	}
 	else if (type == "Code") {
-		// var [[code_identifier, code_classes, code_attributes], code_text] = value
+		var [[code_identifier, code_classes, code_attributes], code_text] = value
+		return await code_to_texttt(code_text, format, emoji_source)
 		// return pandoc.Code([code_identifier, code_classes, code_attributes], code_text)
 	}
 	else if (type == "RawBlock") {
@@ -128,12 +141,13 @@ async function visit(obj, format, meta) {
 		// return pandoc.RawBlock(raw_format, raw_text)
 	}
 	else if (type == "RawInline") {
-		var [raw_format, raw_text] = value
-		return pandoc.RawInline(raw_format, raw_text)
+		// var [raw_format, raw_text] = value
+		// return pandoc.RawInline(raw_format, raw_text)
 	}
 	else if (type == "CodeBlock") {
 		var [[code_identifier, code_classes, code_attributes], code_text] = value
 		return await codeblock_to_verbatim(code_text, format, emoji_source)
+		// return pandoc.CodeBlock([code_identifier, code_classes, code_attributes], code_text)
 	}
 }
 

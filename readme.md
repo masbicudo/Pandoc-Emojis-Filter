@@ -17,10 +17,8 @@ latex engines, only to have black-and-white emojis.
 
 📦package \
 ┣ 📂dir1 \
-┣ 📂dir2 \
 ┃ ┗ 📂subdir \
-┣ 📜file1 \
-┗ 📜file2
+┗ 📜file1
 
 ## Limitations
 
@@ -28,14 +26,19 @@ latex engines, only to have black-and-white emojis.
     This filter is not supposed to do anything about this,
     so I won't be doing anything here about it.
 
+    The following code block uses `<pre>...</pre>` tags.
+    They will not be rendered in the PDF, but are visible in the
+    markdown visualization.
+
     <pre>
     📦package \
     ┣ 📂dir1 \
-    ┣ 📂dir2 \
     ┃ ┗ 📂subdir \
-    ┣ 📜file1 \
-    ┗ 📜file2
+    ┗ 📜file1
     </pre>
+
+    There should be a code block above... if you are looking at the [example.pdf](example.pdf),
+    you'll see nothing above.
 
 - Codeblocks and Code, like `📂dir1`, are now being parsed.
     The `CodeBlock` nodes are replaced by the latex `Verbatim` provided
@@ -48,12 +51,11 @@ latex engines, only to have black-and-white emojis.
 
         📦package
         ┣ 📂dir1
-        ┣ 📂dir2
         ┃ ┗ 📂subdir
-        ┣ 📜file1
-        ┗ 📜file2
+        ┗ 📜file1
 
-- Literal emojis like `:name:` are not converted to real emojis. Use `--from markdown+emoji` or `--from gfm`.
+- Literal emojis like `:name:` are not converted to real emojis.
+    Use `--from markdown+emoji` or `--from gfm`.
 
     :smile: :airplane:
 
@@ -87,11 +89,13 @@ Then, run `pandoc` passing in the filter file name:
 
 Passing parameters:
 
-    pandoc --template="template.tex" -o out.pdf readme.md --filter=svg_filter.js -M __debug=1 -M emoji=twemoji
+    pandoc --template="template.tex" -o out.pdf readme.md \
+        --filter=svg_filter.js -M __debug=1 -M emoji=twemoji
 
 Debugging using VSCode:
 
-    pandoc --template="template.tex" -o out.pdf readme.md --filter=svg_filter.js -M __debug=1
+    pandoc --template="template.tex" -o out.pdf readme.md \
+        --filter=svg_filter.js -M __debug=1
 
 Then, in VSCode, attach to Node process... the JS filter code will be waiting,
 and will only continue execution after the debugger is attached. If you don't attach
@@ -101,7 +105,8 @@ the debugger, then it will stall in an infinite loop.
 
 This `readme.md` file was compiled using the following command:
 
-    pandoc --template="template.tex" -o example.pdf readme.md --filter=svg_filter.js -M emoji=noto-emoji --from gfm
+    pandoc --template="template.tex" -o example.pdf readme.md \
+        --filter=svg_filter.js -M emoji=noto-emoji --from gfm
 
 This is the resulting PDF: [example.pdf](example.pdf)
 

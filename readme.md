@@ -1,4 +1,4 @@
-# Converting MD to PDF
+# Converting MD containing emojis to PDF
 
 Markdown to PDF conversion is quite easy using `pandoc`.
 The real problem arises when trying to use unicode emojis.
@@ -142,6 +142,6 @@ See [Emojipedia](https://emojipedia.org/) for a list of emojis.
 
 - [Full Emoji List - unicode.org](https://unicode.org/emoji/charts/full-emoji-list.html)
 - [Emojipedia](https://emojipedia.org/microsoft/)
-- `\usepackage{pmboxdraw}`
 - VSCode extension: [file-tree-generator](https://marketplace.visualstudio.com/items?itemName=Shinotatwu-DS.file-tree-generator)
 - https://github.com/googlefonts/noto-emoji
+- `\usepackage{pmboxdraw}`: this is used to draw file-structure lines

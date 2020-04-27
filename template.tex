@@ -316,7 +316,13 @@ $if(graphics)$
 $endif$
 $if(links-as-notes)$
 % Make links footnotes instead of hotlinks:
-\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
+% Note: I changed 'DeclareRobustCommand' to 'renewcommand'... because
+% it entered an infinite loop. It seems that when replacing a command with
+% DeclareRobustCommand it changes the reference, not the object itself.
+% ref: https://tex.stackexchange.com/questions/12774/changing-hrefs-to-footnotes
+% ref: https://stackoverflow.com/questions/33900067/pandoc-filter-to-add-footnotes-to-links
+\let\oldhref=\href
+\renewcommand{\href}[2]{\oldhref{#1}{#2}\footnote{\url{#1}}}
 $endif$
 $if(strikeout)$
 \usepackage[normalem]{ulem}

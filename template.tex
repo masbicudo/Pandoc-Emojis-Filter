@@ -315,7 +315,7 @@ $if(graphics)$
 \makeatother
 $endif$
 $if(links-as-notes)$
-% Make links footnotes instead of hotlinks:
+% Make links footnotes and also hotlinks:
 % Note: I changed 'DeclareRobustCommand' to 'renewcommand'... because
 % it entered an infinite loop. It seems that when replacing a command with
 % DeclareRobustCommand it changes the reference, not the object itself.
@@ -439,29 +439,59 @@ $endif$
 \usepackage{fvextra}
 
 % Note: redefining the inline code to have a background
-\definecolor{bgcolor}{cmyk}{0,0.01,0.1,0}
+\definecolor{codebgcolor}{cmyk}{0,0.01,0.1,0}
 \let\oldtexttt\texttt
 \renewcommand{\texttt}[1]{
-  \colorbox{bgcolor}{\oldtexttt{#1}}
+  \colorbox{codebgcolor}{\oldtexttt{#1}}
 }
 
 % Note: redefining the Verbatim environment to have a background
-\let\oldv\Verbatim
-\let\oldendv\endVerbatim
-\def\Verbatim{\setbox0\vbox\bgroup\oldv}
+% I used `latexdef -E itemize` and `latexdef -E enumerate` to
+% discover the internal variables they use to control indentation.
+% Then I used `\leftmargin` to know how much each indentation
+% level indents, and added a negative horizontal spacing `\hspace`.
+% ref: [The definitions of LaTeX commands](https://texfaq.org/FAQ-ltxcmds)
+% ref: https://tex.stackexchange.com/questions/62202/change-background-colour-of-verbatim-environment
 \makeatletter
+\let\oldv\Verbatim
+\def\Verbatim{%
+  \setbox0\vbox\bgroup\oldv%
+}
+
+$if(full-width-codeblock)$$else$
+% == indented nested Verbatim ==
+% ref: https://tex.stackexchange.com/questions/426736/addition-multiplication-of-parameter-and-constant-with-unit
+\def\unindent{\hspace{-\dimexpr\leftmargin*(\@itemdepth+\@enumdepth)\relax}}
+\let\oldendv\endVerbatim
 \def\endVerbatim{%
-  \oldendv\egroup\fboxsep0pt \colorbox{bgcolor}{%
-  \parbox{\linewidth}{%
-    \hspace{-\@itemdepth\leftmargin}%
-    \hspace{-\@enumdepth\leftmargin}%
-    \usebox0%
+  \oldendv\egroup\fboxsep0pt \colorbox{codebgcolor}{%
+    \parbox{\linewidth}{%
+      \unindent\usebox0%
+    }%
   }%
-}}
+}
+$endif$
+$if(full-width-codeblock)$
+% == full width nested Verbatim ==
+% ref: https://tex.stackexchange.com/questions/131637/no-indentation-for-non-item-within-itemize
+\newcommand\NoIndent[1]{%
+	\begingroup\par\parshape0#1\par\endgroup%
+}
+\let\oldendv\endVerbatim
+\def\endVerbatim{%
+  \oldendv\egroup\fboxsep0pt \NoIndent{%
+    \colorbox{codebgcolor}{%
+      \usebox0%
+    }%
+  }%
+}
+$endif$
+
 \makeatother
 
 % Note: this is used to remove indentation that Pandoc
 % adds when it renders nested enumerations/listings.
+% ref: https://stackoverflow.com/questions/49393784/how-can-i-sum-two-numbers-in-latex-with-my-own-command
 \usepackage{xfp}
 \makeatletter
 \def\autogobble{\fpeval{2(\@itemdepth+\@enumdepth)}}

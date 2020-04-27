@@ -14,3 +14,5 @@ tex2pdf.*
 /out.*
 *.bak
 *.orig
+/example.*
+!/example.pdf

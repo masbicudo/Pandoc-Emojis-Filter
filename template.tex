@@ -460,6 +460,13 @@ $endif$
 }}
 \makeatother
 
+% Note: this is used to remove indentation that Pandoc
+% adds when it renders nested enumerations/listings.
+\usepackage{xfp}
+\makeatletter
+\def\autogobble{\fpeval{2(\@itemdepth+\@enumdepth)}}
+\makeatother
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter

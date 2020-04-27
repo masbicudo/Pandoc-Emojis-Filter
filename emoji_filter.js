@@ -131,7 +131,7 @@ async function codeblock_to_verbatim(code_text, format, emoji_source) {
 	const context = "Verbatim"
 	var items = await replace_emojis(code_text, format, emoji_source, context)
 	return ([
-		pandoc.RawBlock("latex", "\\begin{"+context+"}[commandchars=\\\\\\{\\}, mathescape]"),
+		pandoc.RawBlock("latex", "\\begin{"+context+"}[commandchars=\\\\\\{\\}, mathescape, gobble=\\autogobble]"),
 		pandoc.Para([...(Array.isArray(items) ? items : [items]),]),
 		pandoc.RawBlock("latex", "\\end{"+context+"}"),
 	])

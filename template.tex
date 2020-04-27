@@ -438,6 +438,13 @@ $endif$
 
 \usepackage{fvextra}
 
+% Note: redefining the inline code to have a background
+\definecolor{bgcolor}{cmyk}{0,0.01,0.1,0}
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{
+  \colorbox{bgcolor}{\oldtexttt{#1}}
+}
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter

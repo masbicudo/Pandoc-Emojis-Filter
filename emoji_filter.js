@@ -78,19 +78,16 @@ async function get_emoji(icon, source) {
 }
 
 async function replace_emojis(text, format, emoji_source, context) {
-	var create_text
-	if (context == "texttt") create_text = (text) => pandoc.Code(["", [], []], text)
-	else create_text = (text) => pandoc.Str(text)
 
 	var text_w_img = twemoji.parse(text, { callback: imageSourceGenerator })
 	var split = text_w_img.split(/\<img class="emoji" draggable="false" alt="([^"]+)" src="([^"]+)"\/>/g)
 	if (split.length == 1)
-		return create_text(split[0])
+		return pandoc.Str(split[0])
 	
 	const result_array = []
 	for (var it = 0; it < split.length; it += 3) {
 		if (split[it] !== "") {
-			result_array.push(create_text(split[it]))
+			result_array.push(pandoc.Str(split[it]))
 		}
 		if (it + 2 < split.length && split[it + 2] !== null) {
 			const id = ""
@@ -98,7 +95,7 @@ async function replace_emojis(text, format, emoji_source, context) {
 			const attrs = []
 			const caption_list = []
 			if (split[it + 1] !== null) {
-				const str_emoji = create_text(split[it + 1])
+				const str_emoji = pandoc.Str(split[it + 1])
 				str_emoji.__skip = true
 				caption_list.push(str_emoji)
 			}
@@ -108,7 +105,8 @@ async function replace_emojis(text, format, emoji_source, context) {
 			attrs.push(["height", "1em"])
 			var img_emoji
 			if (format == "latex" && (context == "Verbatim" || context == "texttt")) {
-				img_emoji = pandoc.RawInline("latex", `$\\includegraphics[${attrs.map(a=>a.join('=')).join(',')}]{${src.replace(/\\/g, '/')}}$`)
+				var raw = `$\\includegraphics[${attrs.map(a=>a.join('=')).join(',')}]{${src.replace(/\\/g, '/')}}$`
+				img_emoji = pandoc.RawInline("latex", raw)
 			}
 			else {
 				img_emoji = pandoc.Image([id, classes, attrs], caption_list, [src, "fig:"])
@@ -123,7 +121,9 @@ async function code_to_texttt(code_text, format, emoji_source) {
 	const context = "texttt"
 	var items = await replace_emojis(code_text, format, emoji_source, context)
 	return ([
+		pandoc.RawInline("latex", "\\texttt{"),
 		...(Array.isArray(items) ? items : [items]),
+		pandoc.RawInline("latex", "}"),
 	])
 }
 

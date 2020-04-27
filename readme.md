@@ -40,19 +40,18 @@ latex engines, only to have black-and-white emojis.
     There should be a code block above... if you are looking at the [example.pdf](example.pdf),
     you'll see nothing above.
 
-- Codeblocks and Code, like `📂dir1`, are now being parsed.
-    The `CodeBlock` nodes are replaced by the latex `Verbatim` provided
-    by the package `fvextra`. The `Code` nodes are replaced by
-    a sequence of `RawInline` and `Code` nodes, literally it just
-    remove the emojis from the code node, splitting the code node if necessary.
-    This is less than ideal, but for now it is working. It could be placed
-    inside the latex `texttt` command, but that would be more
-    laborious.
-
         📦package
         ┣ 📂dir1
         ┃ ┗ 📂subdir
         ┗ 📜file1
+- Codeblocks and Code can be used, like in `📂dir1`, or the following code block:
+
+
+    This requires some messing with latex code, because some packages
+    must be used. Specifically in this case, `fvextra` provides a
+    `Verbatim` environment that allows the inclusion of inner commands,
+    needed to display the image of the emoji. Thats why a `template.tex`
+    must be provided to Pandoc.
 
 - Literal emojis like `:name:` are not converted to real emojis.
     Use `--from markdown+emoji` or `--from gfm`.

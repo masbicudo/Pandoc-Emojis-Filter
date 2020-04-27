@@ -13,12 +13,36 @@ a markdown file containing emoji characters. You must
 setup special fonts, overcome lack of support by the
 latex engines, only to have black-and-white emojis.
 
-## Representing a file-system structure
+## Features
 
-📦package \
-┣ 📂dir1 \
-┃ ┗ 📂subdir \
-┗ 📜file1
+- Emojis can be used in normal text, like this :apple:, or like the following:
+
+    📦package \
+    ┣ 📂dir1 \
+    ┃ ┗ 📂subdir \
+    ┗ 📜file1
+
+- Codeblocks and Code can be used, like in `📂dir1`, or the following code block:
+
+    - even if it is inside a subitem
+
+          📦package
+          ┣ 📂dir1
+          ┃ ┗ 📂subdir
+          ┗ 📜file1
+
+    This requires some messing with latex code, because some packages
+    must be used. Specifically in this case, `fvextra` provides a
+    `Verbatim` environment that allows the inclusion of inner commands,
+    needed to display the image of the emoji. Thats why a `template.tex`
+    must be provided to Pandoc.
+
+- Literal emojis like `:name:` are not converted by this filter... but Pandoc can handle this.
+    Use `--from markdown+emoji` or `--from gfm`, and this emoji filter together.
+
+    :smile: :airplane:
+
+    See [Non-pandoc extensions - Pandoc manual](https://pandoc.org/MANUAL.html#non-pandoc-extensions)
 
 ## Limitations
 
@@ -39,28 +63,6 @@ latex engines, only to have black-and-white emojis.
 
     There should be a code block above... if you are looking at the [example.pdf](example.pdf),
     you'll see nothing above.
-
-- Codeblocks and Code can be used, like in `📂dir1`, or the following code block:
-
-    - even if it is inside a subitem
-
-          📦package
-          ┣ 📂dir1
-          ┃ ┗ 📂subdir
-          ┗ 📜file1
-
-    This requires some messing with latex code, because some packages
-    must be used. Specifically in this case, `fvextra` provides a
-    `Verbatim` environment that allows the inclusion of inner commands,
-    needed to display the image of the emoji. Thats why a `template.tex`
-    must be provided to Pandoc.
-
-- Literal emojis like `:name:` are not converted to real emojis.
-    Use `--from markdown+emoji` or `--from gfm`.
-
-    :smile: :airplane:
-
-    See [Non-pandoc extensions - Pandoc manual](https://pandoc.org/MANUAL.html#non-pandoc-extensions)
 
 ## Compiling a PDF from this `readme.md` file
 

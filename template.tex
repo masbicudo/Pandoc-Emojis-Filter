@@ -445,6 +445,21 @@ $endif$
   \colorbox{bgcolor}{\oldtexttt{#1}}
 }
 
+% Note: redefining the Verbatim environment to have a background
+\let\oldv\Verbatim
+\let\oldendv\endVerbatim
+\def\Verbatim{\setbox0\vbox\bgroup\oldv}
+\makeatletter
+\def\endVerbatim{%
+  \oldendv\egroup\fboxsep0pt \colorbox{bgcolor}{%
+  \parbox{\linewidth}{%
+    \hspace{-\@itemdepth\leftmargin}%
+    \hspace{-\@enumdepth\leftmargin}%
+    \usebox0%
+  }%
+}}
+\makeatother
+
 \begin{document}
 $if(has-frontmatter)$
 \frontmatter

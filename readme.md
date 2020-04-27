@@ -40,12 +40,14 @@ latex engines, only to have black-and-white emojis.
     There should be a code block above... if you are looking at the [example.pdf](example.pdf),
     you'll see nothing above.
 
-        📦package
-        ┣ 📂dir1
-        ┃ ┗ 📂subdir
-        ┗ 📜file1
 - Codeblocks and Code can be used, like in `📂dir1`, or the following code block:
 
+    - even if it is inside a subitem
+
+          📦package
+          ┣ 📂dir1
+          ┃ ┗ 📂subdir
+          ┗ 📜file1
 
     This requires some messing with latex code, because some packages
     must be used. Specifically in this case, `fvextra` provides a

@@ -13,6 +13,13 @@ a markdown file containing emoji characters. You must
 setup special fonts, overcome lack of support by the
 latex engines, only to have black-and-white emojis.
 
+The Pandoc Emoji Filter present in this repository solves
+all of these problems: it provides colored emojis by using
+known emoji SVG repositories such as `twemoji` and `noto-emoji`.
+Some TeX knowledge might be useful though, since there is
+a `template.tex` file needed to insert SVG images in some
+contexts, such as code blocks.
+
 ## Features
 
 - Emojis can be used in normal text, like this :apple:, or like the following:
@@ -38,7 +45,8 @@ latex engines, only to have black-and-white emojis.
     must be provided to Pandoc.
 
 - Literal emojis like `:name:` are not converted by this filter... but Pandoc can handle this.
-    Use `--from markdown+emoji` or `--from gfm`, and this emoji filter together.
+    Use `--from markdown+emoji` or `--from gfm`, and also the Pandoc Emoji Filter to get
+    these converted to PDF.
 
     :smile: :airplane:
 

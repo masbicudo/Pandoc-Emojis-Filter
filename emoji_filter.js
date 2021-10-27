@@ -37,7 +37,7 @@ function imageSourceGenerator(icon, options) {
 function svg_to_pdf(src) {
 	const full_target = path.join(process.cwd(), src.replace(/\.svg$/, ".pdf"))
 	const full_src = path.join(process.cwd(), src)
-	const cmd_line = `"${inkscape_path}" --export-pdf "${full_target}" "${full_src}"`
+	const cmd_line = `"${inkscape_path}" --export-type=pdf "${full_target}" "${full_src}"`
 	if (!fs.existsSync(full_target))
 		shell.exec(cmd_line)
 	return full_target

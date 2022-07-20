@@ -22,13 +22,13 @@ const https = require('https')
 const twemoji = require('twemoji')
 const shell = require('shelljs')
 const path = require('path')
+const PDFDocument = require('pdfkit')
+const SVGtoPDF = require('svg-to-pdfkit')
 
 function wait_debugger() {
 	var hr=process.hrtime.bigint,f=wait_debugger,t
 	while(!f._r){t=hr();debugger;if(hr()-t>100000000)f._r=true}
 }
-
-const inkscape_path = shell.which("inkscape").stdout.split("\n")[0].trim()
 
 function imageSourceGenerator(icon, options) {
 	return icon
@@ -37,9 +37,14 @@ function imageSourceGenerator(icon, options) {
 function svg_to_pdf(src) {
 	const full_target = path.join(process.cwd(), src.replace(/\.svg$/, ".pdf"))
 	const full_src = path.join(process.cwd(), src)
-	const cmd_line = `"${inkscape_path}" --export-type=pdf "${full_target}" "${full_src}"`
-	if (!fs.existsSync(full_target))
-		shell.exec(cmd_line)
+	const doc = new PDFDocument()
+	const svg = fs.readFileSync(full_src).toString()
+	const stream = fs.createWriteStream(full_target)
+	SVGtoPDF(doc, svg)
+	
+	doc.pipe(stream)
+	doc.end()
+	
 	return full_target
 }
 

@@ -1,12 +1,14 @@
 {
   "name": "pandoc-emoji-filter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Replaces unicode emoji codepoints to SVG representations so that they are displayed inside the resulting PDF",
   "main": "create-example.sh",
   "dependencies": {
     "pandoc-filter": "^2.0.0",
     "shelljs": "^0.8.4",
-    "twemoji": "^12.1.5"
+    "twemoji": "^12.1.5",
+    "pdfkit": "^0.13.0",
+    "svg-to-pdfkit": "^0.1.8"
   },
   "devDependencies": {},
   "scripts": {
@@ -22,7 +24,8 @@
     "svg",
     "markdown",
     "pdf",
-    "filter"
+    "filter",
+    "pdfkit"
   ],
   "author": "Miguel Angelo Santos Bicudo (masbicudo@gmail.com)",
   "license": "Apache-2.0",
